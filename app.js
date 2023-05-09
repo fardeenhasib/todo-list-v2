@@ -15,16 +15,38 @@ mongoose.connect("mongodb://localhost:27017/todolistDB", { useNewUrlParser: true
 
 const itemsSchema = {
   name: String,
-}
+};
 
 const Item = mongoose.model("Item", itemsSchema);
 
+const itemOne = new Item({
+  name: "Welcome to our todolist",
+});
 
+const itemTwo = new Item({
+  name: "Hit + button to add a new item",
+});
+
+
+const itemThree = new Item({
+  name: "<-- Hit this to delete an item",
+});
+
+
+const defaultItems = [itemOne, itemTwo, itemThree];
+
+Item.insertMany(defaultItems, function (err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("Data was successfully inserted");
+  }
+});
 
 app.get("/", function (req, res) {
 
 
-  res.render("list", { listTitle: "Today", newListItems: items });
+  res.render("list", { listTitle: "Today", newListItems: defaultItems });
 
 });
 
