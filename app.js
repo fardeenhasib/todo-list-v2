@@ -32,7 +32,10 @@ const itemThree = new Item({
   name: "<-- Hit this to delete an item",
 });
 
+const listSchema = {
+  name: String,
 
+}
 
 
 app.get("/", function (req, res) {
@@ -59,20 +62,36 @@ app.get("/", function (req, res) {
 app.post("/", function (req, res) {
 
   const item = req.body.newItem;
-  const newItem = new Item({
-    name: item
-  });
-  newItem.save();
-  res.redirect("/");
+  const listName = req.body.list;
 
-  // if (req.body.list === "Work") {
-  //   workItems.push(item);
-  //   res.redirect("/work");
-  // } else {
-  //   items.push(item);
-  //   res.redirect("/");
-  // }
+  const newItem = new Item({
+    name: item,
+  });
+
+
+
+  if (listName === "Today") {
+    newItem.save();
+    res.redirect("/");
+  } else {
+    // save in corresponding list
+    console.log("i am here")
+    console.log(listName)
+
+  }
+
+
 });
+
+app.post("/delete", function (req, res) {
+  const deletedItemID = req.body.deletedItem;
+  Item.findByIdAndRemove(deletedItemID, function (err) {
+    if (!err) {
+      console.log("Item Successfully deleted");
+      res.redirect("/");
+    }
+  })
+})
 
 app.get("/work", function (req, res) {
   res.render("list", { listTitle: "Work List", newListItems: workItems });
