@@ -102,11 +102,16 @@ app.post("/", function (req, res) {
     res.redirect("/");
   } else {
     // save in corresponding list
-    console.log("i am here")
-    console.log(listName)
-
+    List.findOne({ name: listName }, function (err, foundResult) {
+      if (err) { console.log("Something went wrong") }
+      else {
+        // no error 
+        foundResult.items.push(newItem);
+        foundResult.save();
+        res.redirect("/" + listName);
+      }
+    })
   }
-
 
 });
 
