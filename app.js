@@ -68,7 +68,7 @@ app.get("/:customList", function (req, res) {
   List.findOne({ name: customList }, function (err, foundResult) {
     if (!err) {
       if (foundResult) {
-        console.log(foundResult)
+        // console.log(foundResult)
         res.render("list", { listTitle: customList, newListItems: foundResult.items })
 
       } else {
@@ -117,12 +117,25 @@ app.post("/", function (req, res) {
 
 app.post("/delete", function (req, res) {
   const deletedItemID = req.body.deletedItem;
-  Item.findByIdAndRemove(deletedItemID, function (err) {
-    if (!err) {
-      console.log("Item Successfully deleted");
-      res.redirect("/");
-    }
-  })
+  console.log(req.body.listTitle)
+  const listName = req.body.listTitle;
+
+  if (listName === "Today") {
+    Item.findByIdAndRemove(deletedItemID, function (err) {
+      if (!err) {
+        console.log("Item Successfully deleted");
+        res.redirect("/");
+      }
+    })
+  } else {
+    List.findOneAndUpdate({ name: listName }, { $pull: { items: { _id: deletedItemID } } }, function (err, foundlist) {
+      if (!err) {
+        res.redirect("/" + listName);
+      }
+
+    })
+  }
+
 })
 
 app.get("/work", function (req, res) {
