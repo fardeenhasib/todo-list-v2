@@ -32,10 +32,14 @@ const itemThree = new Item({
   name: "<-- Hit this to delete an item",
 });
 
+const defaultItems = [itemOne, itemTwo, itemThree]
+
 const listSchema = {
   name: String,
-
+  items: [itemsSchema]
 }
+
+const List = mongoose.model("List", listSchema);
 
 
 app.get("/", function (req, res) {
@@ -58,6 +62,29 @@ app.get("/", function (req, res) {
   });
 
 });
+
+app.get("/:customList", function (req, res) {
+  const customList = req.params.customList;
+  List.findOne({ name: customList }, function (err, foundResult) {
+    if (!err) {
+      if (foundResult) {
+        console.log(foundResult)
+        res.render("list", { listTitle: customList, newListItems: foundResult.items })
+
+      } else {
+        // painai. ekhn new list create korbo eitar jonno
+        const listForNewRoute = new List({
+          name: customList,
+          items: defaultItems
+        })
+        listForNewRoute.save();
+        res.redirect("/" + customList);
+
+      }
+
+    }
+  })
+})
 
 app.post("/", function (req, res) {
 
